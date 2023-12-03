@@ -74,7 +74,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -184,8 +184,8 @@ require('lazy').setup({
   -- NOTE: Next Step on Your Neovim Journey: Add/Configurae additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.autoformat',
+  require 'kickstart.plugins.debug',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -309,7 +309,7 @@ local function live_grep_git_root()
   local git_root = find_git_root()
   if git_root then
     require('telescope.builtin').live_grep({
-      search_dirs = {git_root},
+      search_dirs = { git_root },
     })
   end
 end
@@ -319,13 +319,14 @@ vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '<leader>.', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
     previewer = false,
   })
-end, { desc = '[/] Fuzzily search in current buffer' })
+end, { desc = '[.] Fuzzily search in current buffer' })
+vim.keymap.set('v', '<leader>f', require('telescope.builtin').grep_string, { desc = '[F]ind selection' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
 vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
@@ -432,20 +433,6 @@ local on_attach = function(_, bufnr)
   nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
-  -- hop
-
-  require('hop').setup()
-  local hop = require('hop')
-  local directions = require('hop.hint').HintDirection
-  vim.keymap.set('', '<leader>f', function()
-    hop.hint_words({ direction = directions.AFTER_CURSOR, current_line_only = false })
-  end, {remap=true})
-  vim.keymap.set('', '<leader>F', function()
-    hop.hint_words({ direction = directions.BEFORE_CURSOR, current_line_only = false })
-  end, {remap=true})
-
-  nmap("<leader>f", ':HopWord<cr>')
-
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
   nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
@@ -463,6 +450,17 @@ local on_attach = function(_, bufnr)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
 end
+
+-- hop
+require('hop').setup()
+local hop = require('hop')
+local directions = require('hop.hint').HintDirection
+vim.keymap.set('n', '<leader><Right>', function()
+  hop.hint_words({ direction = directions.AFTER_CURSOR, current_line_only = false })
+end, { remap = true })
+vim.keymap.set('n', '<leader><Left>', function()
+  hop.hint_words({ direction = directions.BEFORE_CURSOR, current_line_only = false })
+end, { remap = true })
 
 -- document existing key chains
 require('which-key').register {
@@ -541,6 +539,7 @@ cmp.setup {
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end,
+
   },
   completion = {
     completeopt = 'menu,menuone,noinsert'
@@ -584,6 +583,6 @@ cmp.setup {
 -- [[ Configure nvim-tree ]]
 -- See `:help `
 
-vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle<CR>')
+vim.keymap.set('n', '<leader>t', '<Cmd>Neotree toggle<CR>')
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
