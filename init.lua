@@ -37,7 +37,8 @@ require('lazy').setup({
   'tpope/vim-sleuth',
   -- VIM Surround
   'tpope/vim-surround',
-
+  -- Multi Select
+  'mg979/vim-visual-multi',
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
